@@ -1,5 +1,6 @@
 """Orchestration: validate -> retrieve -> compute minutes -> fit free windows -> explain -> related."""
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from math import ceil
 
 from .guardrails import confidence, validate_busy, validate_day
@@ -71,7 +72,7 @@ def make_plan(query, mode, busy_rows, day_start="08:00", day_end="23:00",
             plan.warnings.append(f"Live lookup failed ({type(err).__name__}); using offline catalog")
             used_fallback = True
         if title is not None:
-            score = 1.0
+            score = round(SequenceMatcher(None, query.strip().lower(), title.name.lower()).ratio(), 2)
     if title is None:
         title, score = find_title(query, titles)
     if title is None:
