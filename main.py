@@ -1,58 +1,35 @@
-from pawpal_system import Owner, Pet, Task, Scheduler
+"""CLI demo of ShowTime Planner. Offline catalog by default; add --live for TMDB when a key is set."""
+import sys
 
-owner = Owner("Jordan")
+from showtime.planner import format_plan, make_plan
 
-mochi = Pet("Mochi", "dog")
-luna = Pet("Luna", "cat")
-owner.add_pet(mochi)
-owner.add_pet(luna)
+BUSY = [("09:00", "12:00", "work"), ("13:00", "17:30", "work"), ("18:30", "19:30", "dinner")]
 
-# Tasks are added out of time order on purpose
-mochi.add_task(Task("Evening walk", "18:00", "daily"))
-luna.add_task(Task("Feeding", "09:30", "daily"))
-morning_walk = Task("Morning walk", "08:00", "daily")
-mochi.add_task(morning_walk)
-luna.add_task(Task("Medication", "12:00", "daily"))
-mochi.add_task(Task("Grooming", "09:30", "once"))  # same time as Luna's feeding
-
-scheduler = Scheduler(owner)
-morning_walk.mark_complete()
+CASES = [
+    ("Inception", "single", 1, BUSY, "Movie tonight"),
+    ("breaking bda", "season", 1, BUSY, "Binge season 1 (typo in title)"),
+    ("The Office", "series", 1, BUSY, "How long to finish the series"),
+    ("Dark", "season", 9, BUSY, "Guardrail: impossible season"),
+    ("Arcane", "single", 1, [("25:00", "26:00", "oops")], "Guardrail: bad busy time"),
+    ("Not A Real Show", "single", 1, BUSY, "Guardrail: unknown title"),
+]
 
 
-def pet_name_for(task):
-    for pet in owner.pets:
-        if any(t is task for t in pet.get_tasks()):
-            return pet.name
+def get_live():
+    if "--live" not in sys.argv:
+        return None
+    from showtime.tmdb import lookup
+    return lookup
 
 
-def print_tasks(title, tasks):
-    print(title)
-    print("-" * 40)
-    if not tasks:
-        print("  (none)")
-    for task in tasks:
-        status = "done" if task.completed else "to do"
-        print(f"  {task.time}  {task.description} ({pet_name_for(task)}) [{task.frequency}] - {status}")
-    print()
+def main() -> None:
+    live = get_live()
+    print("ShowTime Planner demo (busy: " + ", ".join(f"{s}-{e} {n}" for s, e, n in BUSY) + ")")
+    for query, mode, season, busy, label in CASES:
+        print("=" * 60)
+        print(f"{label}: title='{query}' mode={mode} season={season}")
+        print(format_plan(make_plan(query, mode, busy, season=season, live_lookup=live)))
 
 
-print(f"Today's Schedule for {owner.name}")
-print("=" * 40)
-print_tasks("All tasks, sorted by time", scheduler.sort_by_time())
-print_tasks("Tasks still to do", scheduler.filter_tasks(completed=False))
-print_tasks("Mochi's tasks", scheduler.filter_tasks(pet_name="Mochi"))
-
-print("Conflict check")
-print("-" * 40)
-conflicts = scheduler.detect_conflicts()
-for warning in conflicts:
-    print(f"  {warning}")
-if not conflicts:
-    print("  No conflicts found")
-print()
-
-# Completing a daily task creates the same task for the next day
-evening_walk = scheduler.filter_tasks(pet_name="Mochi", completed=False)[0]
-next_task = scheduler.mark_task_complete(evening_walk)
-print(f"Completed '{evening_walk.description}' due {evening_walk.due_date}")
-print(f"New task created: '{next_task.description}' due {next_task.due_date}")
+if __name__ == "__main__":
+    main()

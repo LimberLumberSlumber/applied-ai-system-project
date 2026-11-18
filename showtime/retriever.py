@@ -61,6 +61,8 @@ def related(title: Title, titles: list, k: int = 3) -> list:
         if shared_genres:
             score += len(shared_genres)
             reasons.append("shared genre: " + ", ".join(shared_genres))
+        if score > 0 and other.kind == title.kind:
+            score += 0.5
         if score > 0:
             ranked.append((other, score, "; ".join(reasons)))
     ranked.sort(key=lambda r: (-r[1], r[0].name))
