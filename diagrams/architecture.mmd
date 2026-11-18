@@ -1,0 +1,28 @@
+flowchart TD
+    User([User: title, mode, busy blocks, day window]) --> UI["Streamlit app.py / CLI main.py"]
+    UI --> Plan["planner.make_plan - orchestrator"]
+
+    Plan --> G1{"guardrails.py: validate times, busy blocks, mode, empty title"}
+    G1 -- invalid --> Err["Clear error message returned, no plan made"]
+    G1 -- valid --> Ret
+
+    subgraph RAG["Retrieval (RAG)"]
+        Ret["Retrieve title data"] --> TM["tmdb.py live lookup (only if TMDB_API_KEY set)"]
+        Ret --> Cat["retriever.py fuzzy match on data/catalog.json"]
+        TM -- timeout, error, or no key --> Cat
+        TM -- hit --> Data["Title: runtime, seasons, director, cast, genres"]
+        Cat --> Data
+    end
+
+    Data --> Calc["planner.minutes_needed: single, season, or series"]
+    Calc -- impossible season or no runtime --> Err
+    Calc --> Fit["scheduler.py: free_windows then place_session"]
+    Fit --> Conf["guardrails.confidence: match score, source, data completeness"]
+    Data --> Rel["retriever.related: shared director, cast, genres"]
+    Conf --> Out
+    Rel --> Out["Plan: windows, explanation, warnings, confidence, related titles"]
+    Out --> Human(["Human in the loop: user reads warnings and low-confidence notice, then decides"])
+
+    Tests["pytest suite and eval.py harness (offline, mocked TMDB)"] -.-> Plan
+    Tests -.-> G1
+    Tests -.-> Ret

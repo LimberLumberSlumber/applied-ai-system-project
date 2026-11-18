@@ -1,0 +1,12 @@
+OFFLINE (no TMDB): The Boys, season 1
+  ERROR: No title found for 'The Boys' (best match score 0.56)
+
+LIVE (TMDB): The Boys, season 1
+  Retrieved 'The Boys' (2019, source: tmdb); runtime 59m per episode.
+  Mode 'season' needs 7h 52m for season 1 (8 episodes).
+  Free time today: 7h 30m in 3 window(s).
+  Only part fits today; 22m left over (about 2 days at this free time).
+  Watch 08:00-09:00 (1h)
+  Watch 12:00-13:00 (1h)
+  Watch 17:30-23:00 (5h 30m)
+  Confidence: 1.0

@@ -1,0 +1,17 @@
+case                    result  conf   expected
+----------------------------------------------------------------------
+exact movie             PASS    0.95   ok, 148 min, conf >= 0.9
+typo title              PASS    0.9    fuzzy match plus warning
+season binge minutes    PASS    0.95   8 episodes x 55 min
+series total            PASS    0.95   12 episodes x 88 min
+related by director     PASS    0.95   top related is same director
+movie in season mode    PASS    0.95   warns, treated as single
+impossible season       PASS    -      blocked with error
+bad busy time           PASS    -      blocked with error
+end before start        PASS    -      blocked with error
+unknown title           PASS    -      blocked with error
+empty title             PASS    -      blocked with error
+fully busy day          PASS    0.95   ok, nothing scheduled
+live failure fallback   PASS    0.85   falls back to catalog
+----------------------------------------------------------------------
+13/13 passed | average confidence on accepted plans: 0.93

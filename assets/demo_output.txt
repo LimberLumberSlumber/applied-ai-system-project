@@ -1,0 +1,51 @@
+ShowTime Planner demo (busy: 09:00-12:00 work, 13:00-17:30 work, 18:30-19:30 dinner)
+============================================================
+Movie tonight: title='Inception' mode=single season=1
+  Retrieved 'Inception' (2010, source: catalog); runtime 148m per movie.
+  Mode 'single' needs 2h 28m for the movie.
+  Free time today: 6h 30m in 4 window(s).
+  Everything fits today.
+  Watch 08:00-09:00 (1h)
+  Watch 12:00-13:00 (1h)
+  Watch 17:30-17:58 (28m)
+  Confidence: 0.95
+  Also try: Interstellar (same director/creator (Christopher Nolan); shared genre: sci-fi)
+  Also try: The Dark Knight (same director/creator (Christopher Nolan))
+  Also try: The Prestige (same director/creator (Christopher Nolan))
+============================================================
+Binge season 1 (typo in title): title='breaking bda' mode=season season=1
+  Warning: Matched 'breaking bda' to 'Breaking Bad' (score 0.92); please confirm
+  Retrieved 'Breaking Bad' (2008, source: catalog); runtime 47m per episode.
+  Mode 'season' needs 5h 29m for season 1 (7 episodes).
+  Free time today: 6h 30m in 4 window(s).
+  Everything fits today.
+  Watch 08:00-09:00 (1h)
+  Watch 12:00-13:00 (1h)
+  Watch 17:30-18:30 (1h)
+  Watch 19:30-21:59 (2h 29m)
+  Confidence: 0.9
+  Also try: Better Call Saul (same director/creator (Vince Gilligan); shared genre: crime, drama)
+  Also try: Sherlock (shared genre: crime)
+  Also try: Arrival (shared genre: drama)
+============================================================
+How long to finish the series: title='The Office' mode=series season=1
+  Retrieved 'The Office' (2005, source: catalog); runtime 22m per episode.
+  Mode 'series' needs 69h 40m for the full series (9 seasons, 190 episodes).
+  Free time today: 6h 30m in 4 window(s).
+  Only part fits today; 63h 10m left over (about 11 days at this free time).
+  Watch 08:00-09:00 (1h)
+  Watch 12:00-13:00 (1h)
+  Watch 17:30-18:30 (1h)
+  Watch 19:30-23:00 (3h 30m)
+  Confidence: 0.95
+  Also try: Parks and Recreation (shared genre: comedy)
+  Also try: Knives Out (shared genre: comedy)
+============================================================
+Guardrail: impossible season: title='Dark' mode=season season=9
+  ERROR: 'Dark' has no season 9 (has [1, 2, 3])
+============================================================
+Guardrail: bad busy time: title='Arcane' mode=single season=1
+  ERROR: Busy block 'oops': '25:00' is out of range
+============================================================
+Guardrail: unknown title: title='Not A Real Show' mode=single season=1
+  ERROR: No title found for 'Not A Real Show' (best match score 0.4)
