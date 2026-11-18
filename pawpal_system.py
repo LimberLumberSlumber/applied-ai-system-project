@@ -9,6 +9,7 @@ class Task:
     frequency: str
     completed: bool = False
     due_date: date = field(default_factory=date.today)
+    duration: int = 30  # minutes; used by ShowTime Planner to block time for this task
 
     def mark_complete(self) -> None:
         """Mark this task as completed."""
@@ -91,6 +92,7 @@ class Scheduler:
                     task.time,
                     task.frequency,
                     due_date=task.due_date + timedelta(days=days),
+                    duration=task.duration,
                 )
                 pet.add_task(next_task)
                 return next_task
