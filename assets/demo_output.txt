@@ -1,4 +1,4 @@
-ShowTime Planner demo (busy: 09:00-12:00 work, 13:00-17:30 work, 18:30-19:30 dinner)
+PawPal+ ShowTime demo (busy: 09:00-12:00 work, 13:00-17:30 work, 18:30-19:30 dinner)
 ============================================================
 Movie tonight: title='Inception' mode=single season=1
   Retrieved 'Inception' (2010, source: catalog); runtime 148m per movie.

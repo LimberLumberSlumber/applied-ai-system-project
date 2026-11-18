@@ -1,4 +1,4 @@
-"""Glue between the original PawPal+ pet tasks and ShowTime Planner."""
+"""Glue between the original PawPal+ pet tasks and the ShowTime watch planner."""
 from datetime import date
 
 from .guardrails import parse_time

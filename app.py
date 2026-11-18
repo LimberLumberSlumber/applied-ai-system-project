@@ -7,9 +7,9 @@ from showtime.planner import make_plan
 from showtime.retriever import find_title, load_catalog
 from showtime.tmdb import get_key, lookup
 
-st.set_page_config(page_title="ShowTime Planner", page_icon="🎬")
-st.title("ShowTime Planner")
-st.caption("Built on PawPal+. Plan pet care tasks, then find free time to watch something.")
+st.set_page_config(page_title="PawPal+ ShowTime", page_icon="🎬")
+st.title("PawPal+ ShowTime")
+st.caption("Plan pet care tasks (PawPal+), then find free time to watch something (ShowTime).")
 
 catalog = load_catalog()
 MODES = {"Single episode or movie": "single", "Binge a season": "season",

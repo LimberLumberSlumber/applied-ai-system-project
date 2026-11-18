@@ -1,4 +1,4 @@
-"""CLI demo of ShowTime Planner. Offline catalog by default; add --live for TMDB when a key is set."""
+"""CLI demo of PawPal+ ShowTime. Offline catalog by default; add --live for TMDB when a key is set."""
 import sys
 
 from showtime.planner import format_plan, make_plan
@@ -24,7 +24,7 @@ def get_live():
 
 def main() -> None:
     live = get_live()
-    print("ShowTime Planner demo (busy: " + ", ".join(f"{s}-{e} {n}" for s, e, n in BUSY) + ")")
+    print("PawPal+ ShowTime demo (busy: " + ", ".join(f"{s}-{e} {n}" for s, e, n in BUSY) + ")")
     for query, mode, season, busy, label in CASES:
         print("=" * 60)
         print(f"{label}: title='{query}' mode={mode} season={season}")

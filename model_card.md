@@ -1,8 +1,8 @@
-# Model Card: ShowTime Planner
+# Model Card: PawPal+ ShowTime
 
 ## System summary
 
-ShowTime Planner extends my PawPal+ pet-care scheduler. It retrieves movie and TV data (bundled catalog, optionally TMDB), computes how many minutes a viewing needs for a chosen mode, fits that into the free windows left by the user's busy blocks, and reports a confidence score and related titles. It does not use a generative model to produce answers. The "AI" parts are retrieval, rule-based reasoning, scoring, and guardrails.
+PawPal+ ShowTime extends my PawPal+ pet-care scheduler and keeps its pet care features in a separate tab. It retrieves movie and TV data (bundled catalog, optionally TMDB), computes how many minutes a viewing needs for a chosen mode, fits that into the free windows left by the user's busy blocks, and reports a confidence score and related titles. It does not use a generative model to produce answers. The "AI" parts are retrieval, rule-based reasoning, scoring, and guardrails.
 
 ## Limitations and biases
 
@@ -10,6 +10,7 @@ ShowTime Planner extends my PawPal+ pet-care scheduler. It retrieves movie and T
 - **Popularity and language bias.** The catalog is mostly well-known English-language titles, with a few exceptions (Parasite, Spirited Away, Dark). Related-title suggestions are only drawn from the catalog, so they favor those titles and rarely suggest anything obscure.
 - **Same-creator bias in suggestions.** Ranking rewards shared director, cast, and genre, so users get "more of the same" and little variety.
 - **Average episode runtime.** Shows use one typical episode length. Real episodes vary, so season and series totals are estimates.
+- **Nothing is saved.** Pets, tasks, busy blocks, and confirmed watch sessions live in memory for one browser session only. Pet tasks without a stored length block 30 minutes by default, and only tasks due today block time.
 - **Planning is simple.** One day only, greedy placement, no time zones, no preference for evening viewing, and a movie may be split across windows.
 - **Matching can be wrong.** Fuzzy matching and TMDB's top search hit can pick the wrong title. The system warns on non-exact matches and lowers confidence, but the user must confirm. The confidence value is a heuristic, not a calibrated probability.
 - **Weak typo handling on the live path.** A typo that TMDB cannot resolve, and that the catalog does not contain, ends in an error.
