@@ -1,0 +1,405 @@
+[
+ {
+  "name": "Inception",
+  "kind": "movie",
+  "year": 2010,
+  "runtime": 148,
+  "seasons": {},
+  "director": "Christopher Nolan",
+  "cast": [
+   "Leonardo DiCaprio",
+   "Joseph Gordon-Levitt",
+   "Tom Hardy"
+  ],
+  "genres": [
+   "sci-fi",
+   "thriller"
+  ]
+ },
+ {
+  "name": "Interstellar",
+  "kind": "movie",
+  "year": 2014,
+  "runtime": 169,
+  "seasons": {},
+  "director": "Christopher Nolan",
+  "cast": [
+   "Matthew McConaughey",
+   "Anne Hathaway",
+   "Jessica Chastain"
+  ],
+  "genres": [
+   "sci-fi",
+   "drama"
+  ]
+ },
+ {
+  "name": "The Dark Knight",
+  "kind": "movie",
+  "year": 2008,
+  "runtime": 152,
+  "seasons": {},
+  "director": "Christopher Nolan",
+  "cast": [
+   "Christian Bale",
+   "Heath Ledger",
+   "Aaron Eckhart"
+  ],
+  "genres": [
+   "action",
+   "crime"
+  ]
+ },
+ {
+  "name": "The Prestige",
+  "kind": "movie",
+  "year": 2006,
+  "runtime": 130,
+  "seasons": {},
+  "director": "Christopher Nolan",
+  "cast": [
+   "Christian Bale",
+   "Hugh Jackman",
+   "Michael Caine"
+  ],
+  "genres": [
+   "drama",
+   "mystery"
+  ]
+ },
+ {
+  "name": "Parasite",
+  "kind": "movie",
+  "year": 2019,
+  "runtime": 132,
+  "seasons": {},
+  "director": "Bong Joon-ho",
+  "cast": [
+   "Song Kang-ho",
+   "Lee Sun-kyun",
+   "Cho Yeo-jeong"
+  ],
+  "genres": [
+   "thriller",
+   "drama"
+  ]
+ },
+ {
+  "name": "Spirited Away",
+  "kind": "movie",
+  "year": 2001,
+  "runtime": 125,
+  "seasons": {},
+  "director": "Hayao Miyazaki",
+  "cast": [
+   "Rumi Hiiragi",
+   "Miyu Irino"
+  ],
+  "genres": [
+   "animation",
+   "fantasy"
+  ]
+ },
+ {
+  "name": "Whiplash",
+  "kind": "movie",
+  "year": 2014,
+  "runtime": 106,
+  "seasons": {},
+  "director": "Damien Chazelle",
+  "cast": [
+   "Miles Teller",
+   "J.K. Simmons"
+  ],
+  "genres": [
+   "drama",
+   "music"
+  ]
+ },
+ {
+  "name": "La La Land",
+  "kind": "movie",
+  "year": 2016,
+  "runtime": 128,
+  "seasons": {},
+  "director": "Damien Chazelle",
+  "cast": [
+   "Ryan Gosling",
+   "Emma Stone"
+  ],
+  "genres": [
+   "musical",
+   "romance"
+  ]
+ },
+ {
+  "name": "The Matrix",
+  "kind": "movie",
+  "year": 1999,
+  "runtime": 136,
+  "seasons": {},
+  "director": "The Wachowskis",
+  "cast": [
+   "Keanu Reeves",
+   "Laurence Fishburne",
+   "Carrie-Anne Moss"
+  ],
+  "genres": [
+   "sci-fi",
+   "action"
+  ]
+ },
+ {
+  "name": "Knives Out",
+  "kind": "movie",
+  "year": 2019,
+  "runtime": 130,
+  "seasons": {},
+  "director": "Rian Johnson",
+  "cast": [
+   "Daniel Craig",
+   "Ana de Armas",
+   "Chris Evans"
+  ],
+  "genres": [
+   "mystery",
+   "comedy"
+  ]
+ },
+ {
+  "name": "Blade Runner 2049",
+  "kind": "movie",
+  "year": 2017,
+  "runtime": 164,
+  "seasons": {},
+  "director": "Denis Villeneuve",
+  "cast": [
+   "Ryan Gosling",
+   "Harrison Ford",
+   "Ana de Armas"
+  ],
+  "genres": [
+   "sci-fi",
+   "drama"
+  ]
+ },
+ {
+  "name": "Arrival",
+  "kind": "movie",
+  "year": 2016,
+  "runtime": 116,
+  "seasons": {},
+  "director": "Denis Villeneuve",
+  "cast": [
+   "Amy Adams",
+   "Jeremy Renner",
+   "Forest Whitaker"
+  ],
+  "genres": [
+   "sci-fi",
+   "drama"
+  ]
+ },
+ {
+  "name": "Breaking Bad",
+  "kind": "show",
+  "year": 2008,
+  "runtime": 47,
+  "seasons": {
+   "1": 7,
+   "2": 13,
+   "3": 13,
+   "4": 13,
+   "5": 16
+  },
+  "director": "Vince Gilligan",
+  "cast": [
+   "Bryan Cranston",
+   "Aaron Paul",
+   "Anna Gunn"
+  ],
+  "genres": [
+   "crime",
+   "drama"
+  ]
+ },
+ {
+  "name": "Better Call Saul",
+  "kind": "show",
+  "year": 2015,
+  "runtime": 46,
+  "seasons": {
+   "1": 10,
+   "2": 10,
+   "3": 10,
+   "4": 10,
+   "5": 10,
+   "6": 13
+  },
+  "director": "Vince Gilligan",
+  "cast": [
+   "Bob Odenkirk",
+   "Rhea Seehorn",
+   "Jonathan Banks"
+  ],
+  "genres": [
+   "crime",
+   "drama"
+  ]
+ },
+ {
+  "name": "Stranger Things",
+  "kind": "show",
+  "year": 2016,
+  "runtime": 55,
+  "seasons": {
+   "1": 8,
+   "2": 9,
+   "3": 8,
+   "4": 9
+  },
+  "director": "The Duffer Brothers",
+  "cast": [
+   "Millie Bobby Brown",
+   "Winona Ryder",
+   "David Harbour"
+  ],
+  "genres": [
+   "sci-fi",
+   "horror"
+  ]
+ },
+ {
+  "name": "The Office",
+  "kind": "show",
+  "year": 2005,
+  "runtime": 22,
+  "seasons": {
+   "1": 6,
+   "2": 22,
+   "3": 23,
+   "4": 14,
+   "5": 26,
+   "6": 26,
+   "7": 26,
+   "8": 24,
+   "9": 23
+  },
+  "director": "Greg Daniels",
+  "cast": [
+   "Steve Carell",
+   "Rainn Wilson",
+   "John Krasinski"
+  ],
+  "genres": [
+   "comedy"
+  ]
+ },
+ {
+  "name": "Parks and Recreation",
+  "kind": "show",
+  "year": 2009,
+  "runtime": 22,
+  "seasons": {
+   "1": 6,
+   "2": 24,
+   "3": 16,
+   "4": 22,
+   "5": 22,
+   "6": 22,
+   "7": 13
+  },
+  "director": "Michael Schur",
+  "cast": [
+   "Amy Poehler",
+   "Nick Offerman",
+   "Aziz Ansari"
+  ],
+  "genres": [
+   "comedy"
+  ]
+ },
+ {
+  "name": "Sherlock",
+  "kind": "show",
+  "year": 2010,
+  "runtime": 88,
+  "seasons": {
+   "1": 3,
+   "2": 3,
+   "3": 3,
+   "4": 3
+  },
+  "director": "Steven Moffat",
+  "cast": [
+   "Benedict Cumberbatch",
+   "Martin Freeman"
+  ],
+  "genres": [
+   "mystery",
+   "crime"
+  ]
+ },
+ {
+  "name": "Dark",
+  "kind": "show",
+  "year": 2017,
+  "runtime": 55,
+  "seasons": {
+   "1": 10,
+   "2": 8,
+   "3": 8
+  },
+  "director": "Baran bo Odar",
+  "cast": [
+   "Louis Hofmann",
+   "Lisa Vicari",
+   "Oliver Masucci"
+  ],
+  "genres": [
+   "sci-fi",
+   "thriller"
+  ]
+ },
+ {
+  "name": "Arcane",
+  "kind": "show",
+  "year": 2021,
+  "runtime": 41,
+  "seasons": {
+   "1": 9,
+   "2": 9
+  },
+  "director": "Christian Linke",
+  "cast": [
+   "Hailee Steinfeld",
+   "Kevin Alejandro",
+   "Ella Purnell"
+  ],
+  "genres": [
+   "animation",
+   "fantasy"
+  ]
+ },
+ {
+  "name": "Avatar: The Last Airbender",
+  "kind": "show",
+  "year": 2005,
+  "runtime": 23,
+  "seasons": {
+   "1": 20,
+   "2": 20,
+   "3": 21
+  },
+  "director": "Michael Dante DiMartino",
+  "cast": [
+   "Zach Tyler Eisen",
+   "Mae Whitman",
+   "Dee Bradley Baker"
+  ],
+  "genres": [
+   "animation",
+   "fantasy"
+  ]
+ }
+]
