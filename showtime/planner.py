@@ -73,8 +73,14 @@ def make_plan(query, mode, busy_rows, day_start="08:00", day_end="23:00",
             used_fallback = True
         if title is not None:
             score = round(SequenceMatcher(None, query.strip().lower(), title.name.lower()).ratio(), 2)
-    if title is None:
-        title, score = find_title(query, titles)
+    local, local_score = find_title(query, titles)
+    if local is not None and (title is None or local_score > score):
+        # the catalog match is better than the live hit (TMDB can return a different show with a similar name)
+        if title is not None:
+            plan.warnings.append(f"TMDB returned '{title.name}', a weaker match than catalog '{local.name}'; used the catalog")
+        title, score = local, local_score
+    elif title is None:
+        score = local_score
     if title is None:
         plan.errors.append(f"No title found for '{query}' (best match score {score})")
         return plan

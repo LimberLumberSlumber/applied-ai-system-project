@@ -251,12 +251,13 @@
   "name": "Stranger Things",
   "kind": "show",
   "year": 2016,
-  "runtime": 55,
+  "runtime": 50,
   "seasons": {
    "1": 8,
    "2": 9,
    "3": 8,
-   "4": 9
+   "4": 9,
+   "5": 8
   },
   "director": "The Duffer Brothers",
   "cast": [

@@ -60,3 +60,11 @@ def test_planner_uses_live_title_and_marks_source(with_key):
 def test_planner_falls_back_when_live_returns_none(with_key):
     p = make_plan("Inception", "single", [], live_lookup=lambda q: None)
     assert p.ok and p.source == "catalog"
+
+
+def test_catalog_wins_when_live_hit_is_a_worse_name_match():
+    from showtime.models import Title
+    wrong = Title(name="Dark Shadows", kind="show", runtime=22, seasons={1: 124}, source="tmdb")
+    p = make_plan("Dark", "season", [], season=1, live_lookup=lambda q: wrong)
+    assert p.ok and p.title.name == "Dark" and p.source == "catalog"
+    assert any("weaker match" in w for w in p.warnings)

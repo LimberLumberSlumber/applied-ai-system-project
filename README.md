@@ -4,15 +4,15 @@ A free-time planner for movies and TV. You block out your busy hours, name somet
 
 ## Base project: PawPal+ (Module 2)
 
-ShowTime Planner extends **PawPal+**, my Module 2 Streamlit app for pet owners. PawPal+ let a user add pets and care tasks, sorted tasks by time across pets, warned about same-time conflicts, and created the next task when a daily or weekly task was completed. It had four classes (Task, Pet, Owner, Scheduler) and 10 unit tests. The original code is still in the repo (`pawpal_system.py`, `tests/test_pawpal.py`, `diagrams/uml_final.mmd`) and its tests still pass. The conflict-detection idea became the free-window and overlap logic in ShowTime Planner.
+ShowTime Planner extends **PawPal+**, my Module 2 Streamlit app for pet owners. PawPal+ let a user add pets and care tasks, sorted tasks by time across pets, warned about same-time conflicts, and created the next task when a daily or weekly task was completed. It had four classes (Task, Pet, Owner, Scheduler) and 10 unit tests. The original code is still in the repo (`pawpal_system.py`, `tests/test_pawpal.py`, `reflection.md`, and the `diagrams/uml*.mmd` files) and its tests still pass. The conflict-detection idea became the free-window and overlap logic in ShowTime Planner.
 
 ## What is new (the AI feature)
 
-- **RAG with two sources.** The planner retrieves title data before it answers, and the retrieved numbers decide the result. A bundled catalog (`data/catalog.json`, 21 titles) always works offline. If a TMDB key is set, TMDB is searched first, and any failure falls back to the catalog.
+- **RAG with two sources.** The planner retrieves title data before it answers, and the retrieved numbers decide the result. A bundled catalog (`data/catalog.json`, 21 titles) always works offline. If a TMDB key is set, TMDB is searched too, and the closer name match wins. Any live failure falls back to the catalog.
 - **Related titles by retrieval.** Suggestions are ranked by shared director/creator, shared cast, and shared genre, with the reason shown.
 - **Guardrails.** Bad times, reversed ranges, unknown modes, empty titles, impossible seasons, and missing runtimes return a clear error instead of a plan. Overlapping busy blocks and fuzzy title matches produce warnings.
 - **Confidence score (0 to 1)** from title-match quality, data source, and data completeness. The UI shows a low-confidence notice below 0.7.
-- **Evaluation harness** (`eval.py`) with 13 predefined cases, plus a 49-test pytest suite.
+- **Evaluation harness** (`eval.py`) with 13 predefined cases, plus a 50-test pytest suite.
 
 ## Architecture overview
 
@@ -189,8 +189,8 @@ live failure fallback   PASS    0.85   falls back to catalog
 Pytest, pasted from `python -m pytest -q` ([assets/pytest_output.txt](assets/pytest_output.txt)):
 
 ```
-.................................................                        [100%]
-49 passed in 1.59s
+..................................................                       [100%]
+50 passed in 2.00s
 ```
 
 ## Design decisions and trade-offs
@@ -199,15 +199,17 @@ Pytest, pasted from `python -m pytest -q` ([assets/pytest_output.txt](assets/pyt
 - **Rules plus retrieval instead of an LLM.** Runtime math and window fitting must be exact, so I did not let a model do arithmetic. An LLM re-ranker or explainer is a possible later add-on.
 - **TMDB, not IMDb.** IMDb has no free public API. TMDB has movies, TV, cast, crew, and per-episode runtimes. TV `episode_run_time` is often empty, so the code falls back to the median of real episode runtimes.
 - **Single-day planning, greedy placement.** The first free windows are used in order. It does not optimize for the best time of day or avoid splitting a movie across windows.
+- **Catalog beats a worse live match.** I compared the catalog with TMDB and found that a live search for "Dark" returned Dark Shadows (1966), and "Avatar: The Last Airbender" returned the 2024 remake. The planner now keeps the catalog title when its name match is closer, and says so in a warning.
 - **Minimum 20 minute window.** Tiny gaps are skipped unless they finish the session.
 - **Confidence is a heuristic**, not a calibrated probability.
 
 ## Testing summary
 
-- 49 pytest tests pass and the harness passes 13 of 13 cases. Average confidence on accepted plans was 0.93.
+- 50 pytest tests pass and the harness passes 13 of 13 cases. Average confidence on accepted plans was 0.93.
 - What worked: fuzzy matching, season and series math, guardrail errors, offline fallback when the live lookup fails.
 - What did not work at first: related titles for The Office ranked a movie above Parks and Recreation until I added a same-kind bonus. Live matches also started with a flat confidence of 1.0, which was too trusting, so it now uses name similarity.
 - Still weak: a typo in a live search (for example "oppenheimr") finds nothing on TMDB and nothing in the catalog, so it errors. TMDB's top search result can also be the wrong title.
+- Catalog check: I compared all 21 catalog titles against TMDB. Most matched. Fixed Stranger Things (season 5 added, typical runtime 50). Left The Office seasons 6 and 7 and Parks and Recreation seasons 6 and 7 as is: TMDB counts them as 24/24 and 20/12 episodes versus my 26/26 and 22/13, probably because it merges double-length episodes. Cast lists differ from TMDB in billing order only.
 - Not tested: the real TMDB API in automated tests (mocked on purpose), and the Streamlit UI beyond two smoke tests.
 
 ## Reflection
