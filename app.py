@@ -1,149 +1,76 @@
 import streamlit as st
 
-from pawpal_system import Owner, Pet, Task, Scheduler
+from showtime.models import fmt_duration, fmt_time
+from showtime.planner import make_plan
+from showtime.retriever import load_catalog
+from showtime.tmdb import get_key, lookup
 
-st.set_page_config(page_title="PawPal+", page_icon="🐾", layout="centered")
+st.set_page_config(page_title="ShowTime Planner", page_icon="🎬")
+st.title("ShowTime Planner")
+st.caption("Built on PawPal+. Block out your day, pick something to watch, and see when it fits.")
 
-if "owner" not in st.session_state:
-    st.session_state.owner = Owner("Jordan")
+if "busy" not in st.session_state:
+    st.session_state.busy = [("09:00", "12:00", "work"), ("13:00", "17:30", "work")]
 
-st.title("🐾 PawPal+")
+st.subheader("1. Busy blocks")
+with st.form("add_busy", clear_on_submit=True):
+    c1, c2, c3 = st.columns(3)
+    start = c1.text_input("Start (HH:MM)", "18:30")
+    end = c2.text_input("End (HH:MM)", "19:30")
+    label = c3.text_input("Label", "dinner")
+    if st.form_submit_button("Add busy block"):
+        st.session_state.busy.append((start, end, label))
+if st.session_state.busy:
+    st.table([{"start": s, "end": e, "label": n} for s, e, n in st.session_state.busy])
+    if st.button("Clear busy blocks"):
+        st.session_state.busy = []
+        st.rerun()
 
-st.markdown(
-    """
-Welcome to the PawPal+ starter app.
-
-This file is intentionally thin. It gives you a working Streamlit app so you can start quickly,
-but **it does not implement the project logic**. Your job is to design the system and build it.
-
-Use this app as your interactive demo once your backend classes/functions exist.
-"""
+st.subheader("2. What to watch")
+catalog = load_catalog()
+query = st.text_input("Movie or show title", "Breaking Bad")
+mode_label = st.radio(
+    "Mode",
+    ["Single episode or movie", "Binge a season", "How long to finish the series"],
+    horizontal=True,
 )
+mode = {"Single episode or movie": "single", "Binge a season": "season",
+        "How long to finish the series": "series"}[mode_label]
+season = st.number_input("Season", min_value=1, value=1, disabled=mode != "season")
+d1, d2 = st.columns(2)
+day_start = d1.text_input("Day starts", "08:00")
+day_end = d2.text_input("Day ends", "23:00")
+has_key = get_key() is not None
+use_live = st.checkbox("Also search TMDB (live)", value=has_key, disabled=not has_key,
+                       help="Needs TMDB_API_KEY. Without it the bundled catalog is used.")
 
-with st.expander("Scenario", expanded=True):
-    st.markdown(
-        """
-**PawPal+** is a pet care planning assistant. It helps a pet owner plan care tasks
-for their pet(s) based on constraints like time, priority, and preferences.
-
-You will design and implement the scheduling logic and connect it to this Streamlit UI.
-"""
-    )
-
-with st.expander("What you need to build", expanded=True):
-    st.markdown(
-        """
-At minimum, your system should:
-- Represent pet care tasks (what needs to happen, how long it takes, priority)
-- Represent the pet and the owner (basic info and preferences)
-- Build a plan/schedule for a day that chooses and orders tasks based on constraints
-- Explain the plan (why each task was chosen and when it happens)
-"""
-    )
+if st.button("Plan it", type="primary"):
+    plan = make_plan(query, mode, st.session_state.busy, day_start, day_end, int(season),
+                     titles=catalog, live_lookup=lookup if use_live else None)
+    for err in plan.errors:
+        st.error(err)
+    for warn in plan.warnings:
+        st.warning(warn)
+    if plan.ok:
+        st.subheader(f"{plan.title.name} ({plan.title.year})")
+        st.caption(f"Source: {plan.source} | Director/creator: {plan.title.director or 'n/a'} | "
+                   f"Cast: {', '.join(plan.title.cast) or 'n/a'}")
+        for line in plan.explanation:
+            st.write(line)
+        if plan.segments:
+            st.table([{"from": fmt_time(s), "to": fmt_time(e), "length": fmt_duration(e - s)}
+                      for s, e in plan.segments])
+        else:
+            st.info("No free window long enough today.")
+        st.metric("Confidence", plan.confidence)
+        if plan.confidence < 0.7:
+            st.warning("Low confidence: please check the title and data before relying on this.")
+        if plan.related:
+            st.subheader("You might also like")
+            cols = st.columns(len(plan.related))
+            for col, (other, _, why) in zip(cols, plan.related):
+                col.markdown(f"**{other.name}** ({other.year})")
+                col.caption(why)
 
 st.divider()
-
-st.subheader("Quick Demo Inputs (UI only)")
-owner_name = st.text_input("Owner name", value="Jordan")
-pet_name = st.text_input("Pet name", value="Mochi")
-species = st.selectbox("Species", ["dog", "cat", "other"])
-
-if st.button("Add pet"):
-    st.session_state.owner.add_pet(Pet(pet_name, species))
-
-if st.session_state.owner.pets:
-    st.write("Current pets:")
-    st.table(
-        [{"name": pet.name, "species": pet.species} for pet in st.session_state.owner.pets]
-    )
-else:
-    st.info("No pets yet. Add one above.")
-
-st.markdown("### Tasks")
-st.caption("Add a few tasks. In your final version, these should feed into your scheduler.")
-
-pets = st.session_state.owner.pets
-selected_pet_name = st.selectbox("Pet", [pet.name for pet in pets]) if pets else None
-
-col1, col2, col3 = st.columns(3)
-with col1:
-    task_title = st.text_input("Task title", value="Morning walk")
-with col2:
-    duration = st.number_input("Duration (minutes)", min_value=1, max_value=240, value=20)
-with col3:
-    priority = st.selectbox("Priority", ["low", "medium", "high"], index=2)
-
-col4, col5 = st.columns(2)
-with col4:
-    task_time = st.text_input("Time", value="08:00")
-with col5:
-    frequency = st.selectbox("Frequency", ["once", "daily", "weekly"])
-
-if st.button("Add task", disabled=not pets):
-    selected_pet = next(pet for pet in pets if pet.name == selected_pet_name)
-    selected_pet.add_task(Task(task_title, task_time, frequency))
-
-scheduler = Scheduler(st.session_state.owner)
-pet_name_of = {id(task): pet.name for pet in pets for task in pet.get_tasks()}
-
-st.markdown("### Today's Schedule")
-
-if not pets:
-    st.info("Add a pet first, then add tasks for it.")
-elif not scheduler.get_all_tasks():
-    st.info("No tasks yet. Add one above.")
-else:
-    open_tasks = scheduler.filter_tasks(completed=False)
-    if open_tasks:
-        to_complete = st.selectbox(
-            "Mark a task complete",
-            range(len(open_tasks)),
-            format_func=lambda i: (
-                f"{open_tasks[i].time} {open_tasks[i].description} ({pet_name_of[id(open_tasks[i])]})"
-            ),
-        )
-        if st.button("Mark complete"):
-            done = open_tasks[to_complete]
-            next_task = scheduler.mark_task_complete(done)
-            if next_task:
-                st.success(
-                    f"Completed '{done.description}'. Next {done.frequency} task created for {next_task.due_date}."
-                )
-            else:
-                st.success(f"Completed '{done.description}'.")
-            pet_name_of = {id(task): pet.name for pet in pets for task in pet.get_tasks()}
-
-    conflicts = scheduler.detect_conflicts()
-    if conflicts:
-        for warning in conflicts:
-            st.warning(warning)
-    else:
-        st.success("No scheduling conflicts.")
-
-    filter_col1, filter_col2 = st.columns(2)
-    with filter_col1:
-        pet_filter = st.selectbox("Show pet", ["All"] + [pet.name for pet in pets])
-    with filter_col2:
-        status_filter = st.selectbox("Show status", ["All", "To do", "Done"])
-
-    shown = scheduler.filter_tasks(
-        pet_name=None if pet_filter == "All" else pet_filter,
-        completed={"All": None, "To do": False, "Done": True}[status_filter],
-    )
-    shown_ids = {id(task) for task in shown}
-    rows = [
-        {
-            "time": task.time,
-            "task": task.description,
-            "pet": pet_name_of[id(task)],
-            "frequency": task.frequency,
-            "due": str(task.due_date),
-            "status": "done" if task.completed else "to do",
-        }
-        for task in scheduler.sort_by_time()
-        if id(task) in shown_ids
-    ]
-    if rows:
-        st.table(rows)
-    else:
-        st.info("No tasks match these filters.")
+st.caption("This product uses the TMDB API but is not endorsed or certified by TMDB.")
