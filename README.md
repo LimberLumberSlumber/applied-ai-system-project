@@ -1,6 +1,6 @@
 # PawPal+ ShowTime
 
-A free-time planner for movies and TV. You block out your busy hours, name something to watch, and choose a mode: one episode or movie, binge a season, or find out how long the whole series takes. The system retrieves the title's real data (runtime, episodes per season, cast, director), works out how many minutes you need, fits that into your free windows, and tells you how confident it is.
+A pet-care planner (the original PawPal+) combined with a free-time planner for movies and TV (ShowTime). The first tab tracks pet care tasks. In the second tab you block out your busy hours, name something to watch, and choose a mode: one episode or movie, binge a season, or find out how long the whole series takes. The system retrieves the title's real data (runtime, episodes per season, cast, director), works out how many minutes you need, fits that into your free windows, and tells you how confident it is.
 
 ## Base project: PawPal+ (Module 2)
 
@@ -22,36 +22,68 @@ Source: [diagrams/architecture.mmd](diagrams/architecture.mmd)
 
 ```mermaid
 flowchart TD
-    User([User: title, mode, busy blocks, day window]) --> UI["Streamlit app.py / CLI main.py"]
-    UI --> Plan["planner.make_plan - orchestrator"]
+    User([User]) --> UI["Streamlit app.py with two tabs, or CLI main.py"]
 
-    Plan --> G1{"guardrails.py: validate times, busy blocks, mode, empty title"}
-    G1 -- invalid --> Err["Clear error message returned, no plan made"]
-    G1 -- valid --> Ret
-
-    subgraph RAG["Retrieval (RAG)"]
-        Ret["Retrieve title data"] --> TM["tmdb.py live lookup (only if TMDB_API_KEY set)"]
-        Ret --> Cat["retriever.py fuzzy match on data/catalog.json"]
-        TM -- timeout, error, or no key --> Cat
-        TM -- hit --> Data["Title: runtime, seasons, director, cast, genres"]
-        Cat --> Data
+    subgraph PETS["Tab 1: Pet care (original PawPal+)"]
+        PetUI["Add pets and tasks, mark complete, filter"] --> PawPal["pawpal_system.py: Owner, Pet, Task, Scheduler"]
+        PawPal --> PetOut["Sorted schedule, same-time conflict warnings, next recurring task"]
     end
 
-    Data --> Calc["planner.minutes_needed: single, season, or series"]
-    Calc -- impossible season or no runtime --> Err
-    Calc --> Fit["scheduler.py: free_windows then place_session"]
-    Fit --> Conf["guardrails.confidence: match score, source, data completeness"]
-    Data --> Rel["retriever.related: shared director, cast, genres"]
-    Conf --> Out
-    Rel --> Out["Plan: windows, explanation, warnings, confidence, related titles"]
-    Out --> Human(["Human in the loop: user reads warnings and low-confidence notice, then decides"])
+    subgraph WATCH["Tab 2: Watch planner (ShowTime)"]
+        Busy["Busy time: manual blocks plus confirmed watch sessions"]
+        Bridge["bridge.tasks_to_busy: open pet tasks due today become busy rows"]
+        Eff["Effective busy time"]
+        Busy --> Eff
+        Bridge --> Eff
 
-    Tests["pytest suite and eval.py harness (offline, mocked TMDB)"] -.-> Plan
+        Eff --> Plan["planner.make_plan: orchestrator"]
+        Plan --> G1{"guardrails.py: validate times, busy blocks, mode, empty title"}
+        G1 -- invalid --> Err["Clear error message, no plan made"]
+        G1 -- valid --> Ret
+
+        subgraph RAG["Retrieval (RAG)"]
+            Ret["Retrieve title data"] --> TM["tmdb.py live lookup, only if TMDB_API_KEY is set"]
+            Ret --> Cat["retriever.py fuzzy match on data/catalog.json"]
+            TM -- timeout, error, or no key --> Cat
+            TM -- hit --> Pick["Keep the closer name match: live or catalog"]
+            Cat --> Pick
+            Pick --> Data["Title: runtime, seasons, director, cast, genres"]
+        end
+
+        Data --> Calc["planner.minutes_needed: single, season, or series"]
+        Calc -- impossible season or no runtime --> Err
+        Calc --> Fit["scheduler.py: free_windows then place_session"]
+        Fit --> Conf["guardrails.confidence: match score, source, data completeness"]
+        Data --> Rel["retriever.related: shared director, cast, genres"]
+        Conf --> Out
+        Rel --> Out["Plan: windows, explanation, warnings, confidence, related titles"]
+        Out --> Human(["Human in the loop: user reads warnings and confidence"])
+
+        Out --> View["Click View details on a recommendation"]
+        View --> Detail["Detail panel: year, runtime, director, cast, genres"]
+        Detail --> Check["Check if it fits: make_plan again with effective busy time"]
+        Check --> Confirm{"Confirm step: Yes or Cancel"}
+        Out -- Add to schedule on the main result --> Confirm
+        Confirm -- Cancel --> Busy
+        Confirm -- Yes --> Rows["bridge.segments_to_rows: Watch sessions become busy blocks"]
+        Rows --> Busy
+    end
+
+    UI --> PetUI
+    UI --> Busy
+    PetOut --> Bridge
+    PawPal --> Bridge
+
+    Tests["pytest suite and eval.py harness: offline, mocked TMDB, Streamlit AppTest flows"] -.-> PawPal
+    Tests -.-> Plan
     Tests -.-> G1
     Tests -.-> Ret
+    Tests -.-> Confirm
 ```
 
-Flow: the UI (Streamlit or CLI) calls `planner.make_plan`. Guardrails validate the input first. Retrieval then looks the title up (TMDB if available, else the catalog). The planner computes the minutes needed for the chosen mode, `scheduler.py` finds free windows and places the session, and `guardrails.confidence` scores the result. The user sees the plan, warnings, confidence, and related titles, and decides what to do. That is the human-in-the-loop step. Tests and `eval.py` run offline against the planner, guardrails, and retriever.
+Flow: the Streamlit app has two tabs. Tab 1 is the original PawPal+ (pets, tasks, sorting, filtering, conflict warnings, recurring tasks, all in `pawpal_system.py`). Tab 2 is the watch planner. Busy time is the manual blocks, plus confirmed watch sessions, plus today's open pet tasks (`bridge.tasks_to_busy` turns each task into a busy block using its length). `planner.make_plan` then validates the input with guardrails, retrieves the title (TMDB if available, else the catalog, keeping the closer name match), computes the minutes needed for the chosen mode, finds free windows and places the session in `scheduler.py`, and scores confidence. The user sees the plan, warnings, confidence, and related titles, and decides what to do. That is the human-in-the-loop step.
+
+Recommendation flow: clicking **View details** on a related title opens a panel with its data. **Check if it fits my schedule** runs `make_plan` again against the current busy time. **Add to schedule** (also available on the main result) opens a confirm step. **Yes** turns the planned segments into busy blocks labeled `Watch: <title>` (`bridge.segments_to_rows`), so later plans treat them as busy. **Cancel** changes nothing. Tests and `eval.py` run offline against the pet logic, planner, guardrails, retriever, and the confirm flow.
 
 ## Setup
 
